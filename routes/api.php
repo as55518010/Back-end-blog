@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+    Route::prefix('user')->group(function ($router) {
+        $router->post('login',     [UserController::class, 'login']);
+        $router->post('/register', [UserController::class, 'register']);
+
+        $router->middleware('auth:api')->group(function ($router) {
+            $router->post('logout',      [UserController::class, 'logout']);
+            $router->post('refresh',     [UserController::class, 'refresh']);
+            $router->get('information',  [UserController::class, 'information']);
+        });
+    });
