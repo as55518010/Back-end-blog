@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Intervention\Image\Facades\Image;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
 
@@ -112,5 +116,43 @@ class UserController extends Controller
             'tokenType'   => 'bearer',
             'expiresIn'   =>  auth()->factory()->getTTL() * 60,
         ];
+    }
+
+    /**
+     * 修改個人專區
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function profile(Request $request)
+    {
+        try {
+            $updateData = $request->only(['name', 'email']);
+            if ($request->hasFile('avatar')) {
+                $updateData = array_merge($updateData, [
+                    'avatar_path' => $this->upload($request->file('avatar'))
+                ]);
+            }
+            if (Auth::user()->update($updateData)) {
+                return response()->json(['message' => '個人專區更新成功', 'data' => Auth::user()], 201);
+            }
+        } catch (QueryException $e) {
+            report($e);
+        }
+    }
+
+    /**
+     * 上傳頭像
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function upload($avatar, $width = 75, $height = 75)
+    {
+        $path = $avatar->store('avatars', 'public');
+        if ($path) {
+            Image::make('storage/' . $path)
+                ->resize($width, $height)->save();
+            return $path;
+        }
+        return false;
     }
 }

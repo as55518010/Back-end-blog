@@ -14,13 +14,16 @@ use App\Http\Controllers\UserController;
 |
 */
 
-    Route::prefix('user')->group(function ($router) {
-        $router->post('login',     [UserController::class, 'login']);
-        $router->post('/register', [UserController::class, 'register']);
 
-        $router->middleware('auth:api')->group(function ($router) {
-            $router->post('logout',      [UserController::class, 'logout']);
-            $router->post('refresh',     [UserController::class, 'refresh']);
-            $router->get('information',  [UserController::class, 'information']);
-        });
+Route::prefix('user')->group(function ($router) {
+    $router->post('login',     [UserController::class, 'login']);
+    $router->post('/',         [UserController::class, 'register']);
+
+    $router->middleware('auth:api')->group(function ($router) {
+        $router->get('information',  [UserController::class, 'information']);
+        $router->post('logout',      [UserController::class, 'logout']);
+        $router->post('refresh',     [UserController::class, 'refresh']);
+        $router->post('/avatar',     [UserController::class, 'upload']);
+        $router->put('/',            [UserController::class, 'profile']);
     });
+});
