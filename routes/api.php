@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SerieController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CategorieController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,3 +30,9 @@ Route::prefix('user')->group(function ($router) {
         $router->put('/',            [UserController::class, 'profile']);
     });
 });
+
+Route::apiResource('article', ArticleController::class);
+
+Route::apiResource('categorie', CategorieController::class);
+
+Route::apiResource('serie', SerieController::class);
