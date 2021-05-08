@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categorie;
+use App\Models\AdminMenu;
 use Illuminate\Http\Request;
 
-class CategorieController extends Controller
+class AdminMenuController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,7 +15,8 @@ class CategorieController extends Controller
     public function index()
     {
         return response()->json([
-            'result' => Categorie::get()
+            'message' => '菜單獲取成功',
+            'result'    => AdminMenu::get()
         ]);
     }
 
@@ -28,20 +29,24 @@ class CategorieController extends Controller
     public function store(Request $request)
     {
         return response()->json([
-            'result' => Categorie::create($request->only(['name', 'order', 'pid']))
+            'message' => '創建菜單成功',
+            'result' => AdminMenu::create($request->only([
+                'name', 'url', 'sort', 'icon', 'keep_alive', 'pid'
+            ]))
         ], 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\AdminMenu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function show(Categorie $categorie)
+    public function show(AdminMenu $menu)
     {
         return response()->json([
-            'result' => $categorie
+            'message' => '菜單獲取成功',
+            'result' => $menu
         ]);
     }
 
@@ -49,15 +54,17 @@ class CategorieController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\AdminMenu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Categorie $categorie)
+    public function update(Request $request, AdminMenu $menu)
     {
-        if ($categorie->update($request->only(['name', 'order', 'pid']))) {
+        if ($menu->update($request->only([
+            'name', 'url', 'sort', 'icon', 'keep_alive', 'pid'
+        ]))) {
             return response()->json([
-                'message' => '已成功更新類別區塊',
-                'result'    => $categorie
+                'message' => '已成功更新菜單',
+                'result'    => $menu
             ]);
         }
     }
@@ -65,15 +72,15 @@ class CategorieController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Categorie  $categorie
+     * @param  \App\Models\AdminMenu  $menu
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Categorie $categorie)
+    public function destroy(AdminMenu $menu)
     {
-        if ($categorie->delete()) {
+        if ($menu->delete()) {
             return response()->json([
-                'message' => '已成功刪除類別區塊',
-                'result'    => $categorie
+                'message' => '已成功刪除菜單',
+                'result'    => $menu
             ]);
         }
     }

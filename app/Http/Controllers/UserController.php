@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\User\LoginRequest;
 use App\Http\Requests\User\RegisterRequest;
 
@@ -40,7 +39,7 @@ class UserController extends Controller
         }
         return response()->json([
             'message' => '登入成功',
-            'data'    => $this->respondWithToken($token)
+            'result'    => $this->respondWithToken($token)
         ]);
     }
 
@@ -57,7 +56,7 @@ class UserController extends Controller
             ]));
             if ($user) {
                 $token = auth()->login($user);
-                return response()->json(['message' => '成功註冊', 'data' => $this->respondWithToken($token)], 201);
+                return response()->json(['message' => '成功註冊', 'result' => $this->respondWithToken($token)], 201);
             }
         } catch (QueryException $e) {
             report($e);
@@ -74,7 +73,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => '獲取用戶資訊成功',
-            'data'    => auth()->user()
+            'result'    => auth()->user()
         ]);
     }
 
@@ -133,7 +132,7 @@ class UserController extends Controller
                 ]);
             }
             if (Auth::user()->update($updateData)) {
-                return response()->json(['message' => '個人專區更新成功', 'data' => Auth::user()], 201);
+                return response()->json(['message' => '個人專區更新成功', 'result' => Auth::user()], 201);
             }
         } catch (QueryException $e) {
             report($e);
