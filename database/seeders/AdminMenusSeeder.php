@@ -54,7 +54,7 @@ class AdminMenusSeeder extends Seeder
                     "icon"       => "icon-yun",
                     "keep_alive" => 1,
                     "pid"        => 1,
-                    "name"       => "資源管理"
+                    "name"       => "後台模塊管理"
                   ],
                 ];
         foreach ($AdminMenu as $value) {

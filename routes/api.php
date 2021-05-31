@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MenuController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SerieController;
 use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\AdminMenuController;
 use App\Http\Controllers\CategorieController;
+use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Models\Role;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,10 +21,9 @@ use App\Http\Controllers\CategorieController;
 |
 */
 
-
 Route::prefix('user')->group(function ($router) {
     $router->post('login',     [UserController::class, 'login']);
-    $router->post('/register', [UserController::class, 'register']);
+    $router->post('register', [UserController::class, 'register']);
 
     $router->middleware('auth:api')->group(function ($router) {
         $router->get('information',  [UserController::class, 'information']);
@@ -33,15 +34,18 @@ Route::prefix('user')->group(function ($router) {
     });
 });
 
+
 Route::apiResource('article', ArticleController::class);
 
 Route::apiResource('categorie', CategorieController::class);
 
 Route::apiResource('serie', SerieController::class);
 
-Route::apiResource('categorie', CategorieController::class);
+Route::prefix('admin')->middleware('auth:api')->group(function ($router) {
+    $router->get('menu/self', [MenuController::class, 'menuSelf']);
+    $router->apiResource('menu', MenuController::class);
 
+    $router->apiResource('role', RoleController::class);
 
-Route::prefix('admin')->group(function ($router) {
-    $router->apiResource('menu', AdminMenuController::class);
+    $router->apiResource('permission', PermissionController::class);
 });

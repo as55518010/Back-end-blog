@@ -34,7 +34,7 @@ class UserController extends Controller
     public function login(LoginRequest $request)
     {
         $request = $request->only(['email', 'password']);
-        if (!$token = auth()->attempt($request)) {
+        if (!$token = Auth::attempt($request)) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
         return response()->json([
@@ -55,7 +55,7 @@ class UserController extends Controller
                 'password' => bcrypt($request->input('password', ['rounds' => 12]))
             ]));
             if ($user) {
-                $token = auth()->login($user);
+                $token = Auth::login($user);
                 return response()->json(['message' => '成功註冊', 'result' => $this->respondWithToken($token)], 201);
             }
         } catch (QueryException $e) {
@@ -73,7 +73,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => '獲取用戶資訊成功',
-            'result'    => auth()->user()
+            'result'    => Auth::user()
         ]);
     }
 
@@ -84,7 +84,7 @@ class UserController extends Controller
      */
     public function logout()
     {
-        auth()->logout();
+        Auth::logout();
         return response()->json(['message' => '成功退出']);
     }
 
@@ -97,7 +97,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => '刷新令牌成功',
-            'data'    => $this->respondWithToken(auth()->refresh())
+            'result'    => $this->respondWithToken(Auth::refresh())
         ]);
     }
 
@@ -111,9 +111,8 @@ class UserController extends Controller
     protected function respondWithToken($token)
     {
         return [
-            'accessToken' => $token,
-            'tokenType'   => 'bearer',
-            'expiresIn'   =>  auth()->factory()->getTTL() * 60,
+            'token'  => $token,
+            'expire' => Auth::factory()->getTTL() * 60,
         ];
     }
 

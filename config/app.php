@@ -166,6 +166,8 @@ return [
         /*
          * Package Service Providers...
          */
+        Spatie\Permission\PermissionServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -176,7 +178,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class
     ],
 
