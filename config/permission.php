@@ -1,5 +1,6 @@
 <?php
 
+
 return [
 
     'models' => [
@@ -13,7 +14,7 @@ return [
          * `Spatie\Permission\Contracts\Permission` contract.
          */
 
-        'permission' => Spatie\Permission\Models\Permission::class,
+        'permission' =>App\Models\Permission::class,
 
         /*
          * When using the "HasRoles" trait from this package, we need to know which
@@ -24,7 +25,12 @@ return [
          * `Spatie\Permission\Contracts\Role` contract.
          */
 
-        'role' => Spatie\Permission\Models\Role::class,
+        'role' =>App\Models\Role::class,
+
+        /*
+         * 後台菜單
+         */
+        'admin_menu' => App\Models\AdminMenu::class,
 
     ],
 
@@ -45,6 +51,12 @@ return [
          */
 
         'permissions' => 'permissions',
+
+        /*
+         * 後台菜單表
+         */
+
+        'admin_menus' => 'admin_menus',
 
         /*
          * When using the "HasPermissions" trait from this package, we need to know which
@@ -69,6 +81,12 @@ return [
          */
 
         'role_has_permissions' => 'role_has_permissions',
+
+        /*
+         *後台菜單對應權限表
+         */
+
+        'admin_menus_has_permissions' => 'admin_menus_has_permissions',
     ],
 
     'column_names' => [

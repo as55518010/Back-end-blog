@@ -21,6 +21,24 @@ class RoleController extends Controller
         ]);
     }
 
+    public function page(Request $request)
+    {
+        $query = Role::with('permissions');
+        if ($request->filled(['order', 'sort'])) {
+            $query = $query->orderBy($request['order'], $request['sort']);
+        }
+        $res = $query->paginate($request['size'], ['*'], 'page', $request['page']);
+        return response()->json([
+            'message'    => '角色獲取成功',
+            'list'      => $res->items(),
+            'pagination' => [
+                'page'  => $res->currentPage(),
+                'size'  => $request['size'],
+                'total' => $res->total(),
+            ]
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

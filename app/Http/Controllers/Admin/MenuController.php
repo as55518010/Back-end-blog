@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\AdminMenu;
-use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
@@ -19,7 +18,7 @@ class MenuController extends Controller
     {
         return response()->json([
             'message' => '菜單獲取成功',
-            'result'    => AdminMenu::orderBy('sort')->get()
+            'result'    => Arr::genTree(AdminMenu::with('meta')->orderBy('order')->get()->keyBy('id')->toArray(), 'children')
         ]);
     }
 
@@ -34,7 +33,7 @@ class MenuController extends Controller
         return response()->json([
             'message' => '創建菜單成功',
             'result' => AdminMenu::create(array_filter($request->only([
-                'name', 'url', 'sort', 'icon', 'keep_alive', 'pid'
+                'pid', 'name', 'path', 'component', 'redirect', 'order'
             ]), fn ($val) => !empty($val)))
         ], 201);
     }
@@ -63,8 +62,8 @@ class MenuController extends Controller
     public function update(Request $request, AdminMenu $menu)
     {
         if ($menu->update(array_filter($request->only([
-            'name', 'url', 'sort', 'icon', 'keep_alive', 'pid'
-        ]), fn ($val) => !empty($val)))) {
+            'pid', 'name', 'path', 'component', 'redirect', 'order'
+        ]), fn ($val) =>  $val !== null && $val !== ''))) {
             return response()->json([
                 'message' => '已成功更新菜單',
                 'result'    => $menu
@@ -86,17 +85,5 @@ class MenuController extends Controller
                 'result'    => $menu
             ]);
         }
-    }
-    public function menuSelf()
-    {
-        $selfPermissions =  Auth::user()->getAllPermissions()->pluck('name')->groupBy(function ($item, $key) {
-            return Str::beforeLast($item, '-');
-        })->map(fn ($item) => $item->map(fn ($val) => Str::afterLast($val, '-')));
-        $selfPermissionsRoute = AdminMenu::whereIn('url', $selfPermissions->keys())->orderBy('sort')->get()->map(fn ($item) => $item->setAttribute('permission', $selfPermissions[$item->url]))->toArray();
-
-        return response()->json([
-            'message' => '獲取個人後台菜單成功',
-            'result'    => $selfPermissionsRoute
-        ]);
     }
 }

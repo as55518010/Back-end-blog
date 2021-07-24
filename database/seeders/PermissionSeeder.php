@@ -23,30 +23,13 @@ class PermissionSeeder extends Seeder
     public function permissions(role $role)
     {
         // 詳情請看 AdminMenusSeeder::class
-        $menus = [
-            'system',
-            'system/role',
-            'system/account',
-            'system/dict',
-            'system/access',
-        ];
-        $permissions =
-            [
-                'create',   // 創建
-                'retrieve', // 讀取
-                'update',   // 更新
-                'delete',   // 刪除
-            ];
-        foreach ($menus as $menu) {
-            foreach ($permissions as $permission) {
-                $role->givePermissionTo(Permission::create(['name' => Str::of($menu)->finish('-')->finish($permission)]));
-            }
+        foreach (Permission::all() as $permission) {
+            $role->givePermissionTo($permission);
         }
     }
 
     public function users()
     {
-        // 詳情請看 AdminMenusSeeder::class
         $user = [
             'name'                  => 'Derrick',
             'email'                 => 'as55518010@yahoo.com.tw',

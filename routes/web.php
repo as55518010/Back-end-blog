@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\{AdminMenu,Permission,AdminMenusHasPermission};
 use Illuminate\Support\Facades\Route;
 
 /*

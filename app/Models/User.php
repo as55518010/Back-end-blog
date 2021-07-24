@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Collection;
+use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Spatie\Permission\Traits\HasRoles;
 
 
 class User extends Authenticatable implements JWTSubject
@@ -47,7 +48,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     /**
-     * 获取用户名
+     * 獲取用戶名
      *
      * @param  string  $value
      * @return string
@@ -58,5 +59,24 @@ class User extends Authenticatable implements JWTSubject
             'path' => $this->avatar_path,
             'url'  => Storage::disk('public')->url($this->avatar_path)
         ];
+    }
+
+    public function getAllAdminMenu(): Collection
+    {
+        $admin_menus_id =  $this->getAdminMenusHasPermission()->keys();
+        return AdminMenu::whereIn('id', $admin_menus_id)->get()->reduce(function ($even, $odd) {
+            if (empty($even)) {
+                return $odd->father();
+            }
+            return $even->merge($odd->father(...$even->pluck('id')->toArray()));
+        })->sort()->values();
+    }
+    public function getAdminMenusHasPermission(): Collection
+    {
+        /** @var Collection $permissions */
+        $permissions = $this->getAllPermissions();
+        return  $permissions->map(function ($permission) {
+            return $permission->adminMenusHasPermission;
+        })->groupBy('admin_menus_id');
     }
 }

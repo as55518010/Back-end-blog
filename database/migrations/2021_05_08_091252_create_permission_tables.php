@@ -25,6 +25,7 @@ class CreatePermissionTables extends Migration
         Schema::create($tableNames['permissions'], function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
+            $table->string('tw_name', 255)->comment('名稱');
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
             $table->timestamps();
 
@@ -100,7 +101,23 @@ class CreatePermissionTables extends Migration
 
             $table->primary(['permission_id', 'role_id'], 'role_has_permissions_permission_id_role_id_primary');
         });
+        /**
+         * 創建角色對應權限表
+         */
+        Schema::create($tableNames['admin_menus_has_permissions'], function (Blueprint $table)  use ($tableNames) {
+            $table->unsignedBigInteger('admin_menus_id');
+            $table->unsignedBigInteger('permission_id');
 
+            $table->foreign('admin_menus_id')
+                ->references('id')
+                ->on($tableNames['admin_menus'])
+                ->onDelete('cascade');
+
+            $table->foreign('permission_id')
+                ->references('id')
+                ->on($tableNames['permissions'])
+                ->onDelete('cascade');
+        });
         app('cache')
             ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
             ->forget(config('permission.cache.key'));
@@ -118,7 +135,7 @@ class CreatePermissionTables extends Migration
         if (empty($tableNames)) {
             throw new \Exception('Error: config/permission.php not found and defaults could not be merged. Please publish the package configuration before proceeding, or drop the tables manually.');
         }
-
+        Schema::dropIfExists('admin_menus_has_permissions');
         Schema::drop($tableNames['role_has_permissions']);
         Schema::drop($tableNames['model_has_roles']);
         Schema::drop($tableNames['model_has_permissions']);

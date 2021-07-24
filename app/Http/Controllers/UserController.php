@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Closure;
 use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Requests\AuthRequest;
 use App\Http\Controllers\Controller;
@@ -52,7 +54,7 @@ class UserController extends Controller
     {
         try {
             $user = $this->userModel->create(array_merge($request->only(['name', 'email']), [
-                'password' => bcrypt($request->input('password', ['rounds' => 12]))
+                'password' => bcrypt($request->input('password'))
             ]));
             if ($user) {
                 $token = Auth::login($user);
@@ -123,18 +125,22 @@ class UserController extends Controller
      */
     public function profile(Request $request)
     {
+        $validatedData = $request->validate([
+            'name'        => ['required_without_all:avatar,password', 'string'],
+            'avatar.path' => ['required_without_all:name,password', 'string', 'nullable'],
+            'password'    => ['required_without_all:avatar,name', 'string', 'nullable'],
+        ]);
         try {
-            $updateData = $request->only(['name', 'email']);
-            if ($request->hasFile('avatar')) {
-                $updateData = array_merge($updateData, [
-                    'avatar_path' => $this->upload($request->file('avatar'))
-                ]);
-            }
+            $updateData = array_filter([
+                'name'        => $validatedData['name'],
+                'avatar_path' => $validatedData['avatar']['path'],
+                'password'    => $validatedData['password'] ? bcrypt($validatedData['password']) : null,
+            ]);
             if (Auth::user()->update($updateData)) {
                 return response()->json(['message' => '個人專區更新成功', 'result' => Auth::user()], 201);
             }
         } catch (QueryException $e) {
-            report($e);
+            return report($e);
         }
     }
 
@@ -143,14 +149,35 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    private function upload($avatar, $width = 75, $height = 75)
+    public function upload(Request $request, $width = 75, $height = 75)
     {
-        $path = $avatar->store('avatars', 'public');
-        if ($path) {
-            Image::make('storage/' . $path)
-                ->resize($width, $height)->save();
-            return $path;
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar');
+            $path = $avatar->store('avatars', 'public');
+            if ($path) {
+                Image::make('storage/' . $path)
+                    ->resize($width, $height)->save();
+                $updateData =  ['avatar_path' => $path];
+
+                if (Auth::user()->update($updateData)) {
+                    return response()->json(['message' => '上傳頭像成功', 'result' => Auth::user()], 201);
+                }
+            }
         }
-        return false;
+        return response()->json(['message' => '上傳頭像失敗'], 500);
+    }
+    public function menu()
+    {
+        return response()->json([
+            'message' => '獲取個人後台菜單成功',
+            'result'    => Arr::genTree(Auth::user()->getAllAdminMenu()->keyBy('id')->toArray(), 'children')
+        ]);
+    }
+    public function Permissions()
+    {
+        return response()->json([
+            'message' => '獲取個人後台菜單成功',
+            'result'    => Auth::user()->getAllPermissions()
+        ]);
     }
 }

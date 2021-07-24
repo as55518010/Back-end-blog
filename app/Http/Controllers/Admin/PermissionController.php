@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Permission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Spatie\Permission\Models\Permission;
 
 class PermissionController extends Controller
 {
@@ -18,6 +18,24 @@ class PermissionController extends Controller
         return response()->json([
             'message' => '權限獲取成功',
             'result'    => Permission::get()
+        ]);
+    }
+
+    public function page(Request $request)
+    {
+        $query = Permission::with(['roles','adminMenu']);
+        if ($request->filled(['order', 'sort'])) {
+            $query = $query->orderBy($request['order'], $request['sort']);
+        }
+        $res = $query->paginate($request['size'], ['*'], 'page', $request['page']);
+        return response()->json([
+            'message'    => '角色獲取成功',
+            'list'      => $res->items(),
+            'pagination' => [
+                'page'  => $res->currentPage(),
+                'size'  => $request['size'],
+                'total' => $res->total(),
+            ]
         ]);
     }
 

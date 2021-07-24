@@ -2,10 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Permission as Model;
+use Illuminate\Database\Eloquent\Relations\{hasManyThrough, HasOne};
+
 
 class Permission extends Model
 {
-    use HasFactory;
+    /**
+     * 菜單權限
+     */
+    public function adminMenu(): hasManyThrough
+    {
+        return $this->hasOneThrough(
+            AdminMenu::class,
+            AdminMenusHasPermission::class,
+            'permission_id',
+            'id',
+            'id',
+            'admin_menus_id'
+        );
+    }
+    public function adminMenusHasPermission(): HasOne
+    {
+        return $this->HasOne(AdminMenusHasPermission::class, 'permission_id', 'id');
+    }
 }

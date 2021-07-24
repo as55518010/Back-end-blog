@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'GMT',
+    'timezone' => 'Asia/Taipei',
 
     /*
     |--------------------------------------------------------------------------
@@ -80,7 +80,7 @@ return [
     |
     */
 
-    'locale' => 'zh',
+    'locale' => 'zh-tw',
 
     /*
     |--------------------------------------------------------------------------
@@ -178,7 +178,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class
+        Intervention\Image\ImageServiceProvider::class,
+        App\Providers\ArrMacroServiceProvider::class,
     ],
 
     /*
