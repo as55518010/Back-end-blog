@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 
 class CategorieController extends Controller
@@ -15,7 +16,7 @@ class CategorieController extends Controller
     public function index()
     {
         return response()->json([
-            'result' => Categorie::get()
+            'result' => Categorie::get()->getTree('children')
         ]);
     }
 
