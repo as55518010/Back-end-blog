@@ -16,4 +16,23 @@ class Article extends Model
     {
         return $this->hasOne(ArticleDetil::class,'article_id','id');
     }
+
+    /**
+     *  該文章的上一筆
+     */
+    public function getLastAttribute()
+    {
+        return $this->where([
+            ['id','<',$this->id]
+        ])->orderBy('id', 'desc')->first();
+    }
+    /**
+     *  該文章的下一筆
+     */
+    public function getNextAttribute()
+    {
+        return $this->where([
+            ['id','>',$this->id]
+        ])->orderBy('id', 'asc')->first();
+    }
 }

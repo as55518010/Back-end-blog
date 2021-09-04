@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,10 +14,30 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        $pagination = json_decode($request['pagination'],true);
+        $where      = json_decode($request['where'],true);
+        $order      = json_decode($request['order'],true);
+        $query      = Article::with(['articleDetil']);
+        if ($where) {
+            foreach ($where as $key => $value) {
+                $query->where(Str::snake($key),$value);
+            }
+        }
+        if ($order) {
+            foreach ($order as $key => $value) {
+                $query->orderBy(Str::snake($key),$value);
+            }
+        }
+        $res = $query->paginate($pagination['size'], ['*'], 'page', $pagination['page']);
         return response()->json([
-            'data' => Article::with(['articleDetil'])->get()
+            'list'      => $res->items(),
+            'pagination' => [
+                'page'  => $res->currentPage(),
+                'size'  => $pagination['size'],
+                'total' => $res->total(),
+            ]
         ]);
     }
 
@@ -37,7 +58,6 @@ class ArticleController extends Controller
                 'thumb'
             ])), function ($articleModel) use ($request) {
                 $articleModel->articleDetil()->create($request->only([
-                    'article_id',
                     'tag',
                     'description',
                     'view',
@@ -56,7 +76,7 @@ class ArticleController extends Controller
     public function show(Article $article)
     {
         return response()->json([
-            'data' => $article->load(['articleDetil'])
+            'data' => $article->append(['last', 'next'])->load(['articleDetil'])
         ]);
     }
 
@@ -78,10 +98,8 @@ class ArticleController extends Controller
                 'thumb'
             ]));
             $article->articleDetil()->update($request->only([
-                'article_id',
                 'tag',
                 'description',
-                'view',
                 'recommend'
             ]));
         });
