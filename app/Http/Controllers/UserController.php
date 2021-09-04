@@ -17,17 +17,6 @@ use App\Http\Requests\User\RegisterRequest;
 class UserController extends Controller
 {
 
-    private $userModel;
-    /**
-     * Create a new AuthController instance.
-     *
-     * @return void
-     */
-    public function __construct(User $userModel)
-    {
-        $this->userModel = $userModel;
-    }
-
     /**
      * 通過給定憑據獲取JWT
      *
@@ -35,9 +24,10 @@ class UserController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $request = $request->only(['email', 'password']);
-        if (!$token = Auth::attempt($request)) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+        if (!$token = Auth::attempt($request->only(['email', 'password']))) {
+            if (!$token = Auth::attempt($request->only(['name', 'password']))) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
         }
         return response()->json([
             'message' => '登入成功',
@@ -53,7 +43,7 @@ class UserController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
-            $user = $this->userModel->create(array_merge($request->only(['name', 'email']), [
+            $user = User::create(array_merge($request->only(['name', 'email']), [
                 'password' => bcrypt($request->input('password'))
             ]));
             if ($user) {
@@ -73,9 +63,14 @@ class UserController extends Controller
      */
     public function information()
     {
+        $expansion = [
+            'roles' => ['admin'],
+            'ability' => ['READ', 'WRITE', 'DELETE'],
+            'username' => 'admin',
+        ];
         return response()->json([
             'message' => '獲取用戶資訊成功',
-            'result'    => Auth::user()
+            'result'    => array_merge($expansion,Auth::user()->load('detail')->toArray())
         ]);
     }
 
@@ -170,7 +165,7 @@ class UserController extends Controller
     {
         return response()->json([
             'message' => '獲取個人後台菜單成功',
-            'result'    => Arr::genTree(Auth::user()->getAllAdminMenu()->keyBy('id')->toArray(), 'children')
+            'result'    => Arr::getTree(Auth::user()->getAllAdminMenu()->keyBy('id')->toArray(), 'children')
         ]);
     }
     public function Permissions()

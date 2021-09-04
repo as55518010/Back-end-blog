@@ -18,7 +18,7 @@ class MenuController extends Controller
     {
         return response()->json([
             'message' => '菜單獲取成功',
-            'result'    => Arr::genTree(AdminMenu::with('meta')->orderBy('order')->get()->keyBy('id')->toArray(), 'children')
+            'result'    => AdminMenu::with('meta')->orderBy('order')->get()->getTree('children')
         ]);
     }
 
