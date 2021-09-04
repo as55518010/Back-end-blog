@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminMenusSeeder::class,
             PermissionSeeder::class,
+            CategoriesArticleSeeder::class,
         ]);
     }
 }

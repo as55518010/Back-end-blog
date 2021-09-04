@@ -23,15 +23,17 @@ class CreateArticlesTable extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE `articles` comment '文章表'");
         Schema::create('article_detils', function (Blueprint $table) {
             $table->id();
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
-            $table->string('tag', 60)->nullable()->comment('文章標籤');
+            $table->json('tag')->nullable()->comment('文章標籤');
             $table->string('description', 255)->nullable()->comment('文章描述');
             $table->integer('view')->default(0)->comment('文章瀏覽次數');
             $table->integer('recommend')->default(0)->comment('文章推薦狀態: 0:未推薦 1:加入推薦');
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE `article_detils` comment '文章細節表'");
     }
 
     /**

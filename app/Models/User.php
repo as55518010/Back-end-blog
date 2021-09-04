@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\UserDetail;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\Storage;
@@ -14,8 +15,6 @@ class User extends Authenticatable implements JWTSubject
     use HasRoles;
 
     protected $guarded  = [];
-
-    protected $appends  = ['avatar'];
 
     protected $hidden = [
         'password',
@@ -47,20 +46,6 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    /**
-     * 獲取用戶名
-     *
-     * @param  string  $value
-     * @return string
-     */
-    public function getAvatarAttribute()
-    {
-        return [
-            'path' => $this->avatar_path,
-            'url'  => Storage::disk('public')->url($this->avatar_path)
-        ];
-    }
-
     public function getAllAdminMenu(): Collection
     {
         $admin_menus_id =  $this->getAdminMenusHasPermission()->keys();
@@ -78,5 +63,10 @@ class User extends Authenticatable implements JWTSubject
         return  $permissions->map(function ($permission) {
             return $permission->adminMenusHasPermission;
         })->groupBy('admin_menus_id');
+    }
+
+    public function detail()
+    {
+        return $this->hasOne(UserDetail::class, 'user_id', 'id');
     }
 }

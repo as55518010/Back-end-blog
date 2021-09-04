@@ -26,18 +26,16 @@ class ArrMacroServiceProvider extends ServiceProvider
         /**
          * 將資料格式化成樹形結構
          */
-        Arr::macro('genTree', function ($items, $sonName = 'son') {
+        Arr::macro('getTree', function ($items, $sonName = 'son', $sonTableName = 'pid') {
             $tree = array(); //格式化好的樹
-
-            foreach ($items as $item)
-                if (isset($items[$item['pid']]))
-
-                    $items[$item['pid']][$sonName][] = &$items[$item['id']];
+            foreach ($items as $item){
+                if (isset($items[$item[$sonTableName]]))
+                    $items[$item[$sonTableName]][$sonName][] = &$items[$item['id']];
 
                 else
 
                     $tree[] = &$items[$item['id']];
-
+            }
             return $tree;
         });
     }

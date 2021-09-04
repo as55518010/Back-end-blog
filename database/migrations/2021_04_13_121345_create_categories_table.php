@@ -20,6 +20,7 @@ class CreateCategoriesTable extends Migration
             $table->foreignId('pid')->default(0)->comment('父ID');
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE `categories` comment '文章類別表'");
     }
 
     /**

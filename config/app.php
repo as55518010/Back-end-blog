@@ -180,6 +180,7 @@ return [
         App\Providers\TelescopeServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         App\Providers\ArrMacroServiceProvider::class,
+        App\Providers\EloquentMacroServiceProvider::class,
     ],
 
     /*
