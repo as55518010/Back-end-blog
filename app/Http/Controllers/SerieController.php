@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Serie;
 use Illuminate\Http\Request;
+use App\Models\SerieHasArticle;
 
 class SerieController extends Controller
 {
@@ -15,7 +16,9 @@ class SerieController extends Controller
     public function index()
     {
         return response()->json([
-            'data' => Serie::get()
+            'result' => Serie::with(['article' => function ($query) {
+                return  $query->with('articleDetil');
+            }, 'Categorie'])->get()
         ]);
     }
 
@@ -27,8 +30,11 @@ class SerieController extends Controller
      */
     public function store(Request $request)
     {
+        $page = 0;
         return response()->json([
-            'data' => Serie::create($request->only(['categorie_id', 'article_id', 'name', 'description']))
+            'result' => Serie::create($request->only(['categorie_id', 'name', 'description']))->serieHasArticle()->createMany(array_map(function ($value) use (&$page) {
+                return ['article_id' => $value, 'page' => $page++];
+            }, $request['article']))
         ], 201);
     }
 
@@ -41,10 +47,9 @@ class SerieController extends Controller
     public function show(Serie $serie)
     {
         return response()->json([
-            'data' => $serie
+            'result' => $serie
         ]);
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -54,10 +59,16 @@ class SerieController extends Controller
      */
     public function update(Request $request, Serie $serie)
     {
-        if ($serie->update($request->only(['categorie_id', 'article_id', 'name', 'description']))) {
+        SerieHasArticle::where('serie_id', $serie->id)->delete();
+        foreach ($request['article'] as $key => $value) {
+            $data = ['article_id' => $value, 'page' => $key];
+            $serie->serieHasArticle()->create($data);
+        }
+
+        if ($serie->update($request->only(['categorie_id', 'name', 'description']))) {
             return response()->json([
-                'message' => '已成功更新類別區塊',
-                'data'    => $serie
+                'message' => '已成功更新系列區塊',
+                'result'    => $serie
             ]);
         }
     }
@@ -72,8 +83,8 @@ class SerieController extends Controller
     {
         if ($serie->delete()) {
             return response()->json([
-                'message' => '已成功刪除類別區塊',
-                'data'    => $serie
+                'message' => '已成功刪除系列區塊',
+                'result'    => $serie
             ]);
         }
     }

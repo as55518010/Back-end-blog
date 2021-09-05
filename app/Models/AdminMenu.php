@@ -7,6 +7,37 @@ use App\Models\{AdminMenusHasPermission,AdminMenuMeta};
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\{BelongsToMany, hasMany};
 
+/**
+ * App\Models\AdminMenu
+ *
+ * @property int $id
+ * @property int $pid 父菜單ID
+ * @property string $name 名稱
+ * @property string|null $path 路由地址
+ * @property string|null $component 組件地址
+ * @property string|null $redirect 重定向
+ * @property int $order 排序
+ * @property \Illuminate\Support\Carbon|null $createdAt
+ * @property \Illuminate\Support\Carbon|null $updatedAt
+ * @property-read \Illuminate\Database\Eloquent\Collection|AdminMenusHasPermission[] $adminMenusHasPermission
+ * @property-read int|null $adminMenusHasPermissionCount
+ * @property-read AdminMenuMeta|null $meta
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Permission[] $permission
+ * @property-read int|null $permissionCount
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereComponent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereOrder($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu wherePid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereRedirect($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AdminMenu whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class AdminMenu extends Model
 {
     protected $guarded  = [];

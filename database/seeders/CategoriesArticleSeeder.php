@@ -52,7 +52,7 @@ class CategoriesArticleSeeder extends Seeder
                     ',
                 ],
                 'article_detils' => [
-                    'tag' => json_encode(['js']),
+                    'tag' => ['js'],
                     'description' => '练习项目时需要实现滚动到指定位置然后加载更多',
                     'view' => 124,
                 ]
@@ -160,7 +160,7 @@ class CategoriesArticleSeeder extends Seeder
                     ',
                 ],
                 'article_detils' => [
-                    'tag' => json_encode(['组件通信']),
+                    'tag' => ['组件通信'],
                     'description' => '在Vue项目中经常遇到组件间通信的问题，本文为本人对Vue中兄弟组件间通信的一些思考，订阅-发布模式。',
                     'view' => 278,
                 ]

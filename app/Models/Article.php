@@ -5,6 +5,35 @@ namespace App\Models;
 use App\Models\ArticleDetil;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * App\Models\Article
+ *
+ * @property int $id
+ * @property int $categorieId
+ * @property string $title 文章標題
+ * @property string $content 文章內容
+ * @property string $author 文章作者
+ * @property string|null $thumb 文章縮略圖
+ * @property string|null $deletedAt
+ * @property \Illuminate\Support\Carbon|null $createdAt
+ * @property \Illuminate\Support\Carbon|null $updatedAt
+ * @property-read ArticleDetil|null $articleDetil
+ * @property-read mixed $last
+ * @property-read mixed $next
+ * @method static \Illuminate\Database\Eloquent\Builder|Article newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Article newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Article query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereAuthor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereCategorieId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereThumb($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Article extends Model
 {
     protected $guarded  = [];

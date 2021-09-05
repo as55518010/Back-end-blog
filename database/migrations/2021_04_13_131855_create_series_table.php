@@ -21,11 +21,13 @@ class CreateSeriesTable extends Migration
             $table->timestamps();
         });
         DB::statement("ALTER TABLE `series` comment '文章系列表'");
-        Schema::create('serie_on_article', function (Blueprint $table) {
+
+        Schema::create('serie_has_articles', function (Blueprint $table) {
             $table->foreignId('serie_id')->constrained('series')->onDelete('cascade');
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
+            $table->integer('page')->comment('分頁');
         });
-        DB::statement("ALTER TABLE `serie_on_article` comment '系列關聯文章表'");
+        DB::statement("ALTER TABLE `serie_has_articles` comment '系列關聯文章表'");
     }
 
     /**
@@ -35,7 +37,7 @@ class CreateSeriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('serie_on_article');
+        Schema::dropIfExists('serie_has_articles');
         Schema::dropIfExists('series');
     }
 }
