@@ -179,8 +179,10 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
+        // 添加 Macro 擴展
         App\Providers\ArrMacroServiceProvider::class,
         App\Providers\EloquentMacroServiceProvider::class,
+        App\Providers\CollectionMacroServiceProvider::class,
     ],
 
     /*

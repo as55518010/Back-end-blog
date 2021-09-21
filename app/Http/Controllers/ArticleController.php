@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Serie;
 use App\Models\Article;
+use App\Models\Categorie;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Service\ArticleService;
 use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
@@ -16,18 +19,18 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        $pagination = json_decode($request['pagination'],true);
-        $where      = json_decode($request['where'],true);
-        $order      = json_decode($request['order'],true);
+        $pagination = json_decode($request['pagination'], true);
+        $where      = json_decode($request['where'], true);
+        $order      = json_decode($request['order'], true);
         $query      = Article::with(['articleDetil']);
         if ($where) {
             foreach ($where as $key => $value) {
-                $query->where(Str::snake($key),$value);
+                $query->where(Str::snake($key), $value);
             }
         }
         if ($order) {
             foreach ($order as $key => $value) {
-                $query->orderBy(Str::snake($key),$value);
+                $query->orderBy(Str::snake($key), $value);
             }
         }
         $res = $query->paginate($pagination['size'], ['*'], 'page', $pagination['page']);
@@ -73,11 +76,38 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function show(Article $article)
+    public function show(Request $request, Article $article, ArticleService $articleService)
     {
-        return response()->json([
-            'data' => $article->append(['last', 'next'])->load(['articleDetil'])
-        ]);
+        if (!isset($response['articleData'])) {
+            $response['articleData']  = $article->append(['last', 'next'])->load(['articleDetil']);
+        }
+        return response()->json($response);
+    }
+    /**
+     * 系列文章
+     */
+    public function showSeriesArticle(Request $request, Article $article, Serie $serie, ArticleService $articleService)
+    {
+        if ($request->has('series')) {
+                      $series              = json_decode($request['series'], true);
+            $response['seriesArticleData'] = $articleService->seriesArticlePaginate($article, $serie, $series['pagination']);
+            $response['articleData']       = $articleService->seriesArticleData($article, $serie);
+            $response['series']            = $serie->load(['serieHasArticle']);
+        }
+        return response()->json($response);
+    }
+    /**
+     * 類別文章
+     */
+    public function showCategoryArticle(Request $request, Article $article, Categorie $categorie, ArticleService $articleService)
+    {
+        if ($request->has('category')) {
+                                $category            = json_decode($request['category'], true);
+                      $response['categoryArticleData'] = $articleService->categoryArticlePaginate($article, $categorie, $category['pagination']);
+                      $response['articleData']       = $article->append(['categorieLast', 'categorieNext'])->load(['articleDetil']);
+                      $response['categorie']         = $categorie->append(['articleTotle']);
+        }
+        return response()->json($response);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Serie;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,6 +35,19 @@ class Categorie extends Model
 
     public function article()
     {
-        return $this->hasOne(Article::class, 'categorie_id', 'id');
+        return $this->hasMany(Article::class, 'categorie_id', 'id');
     }
+    public function serie()
+    {
+        return $this->hasOne(Serie::class, 'categorie_id', 'id');
+    }
+
+    /**
+     *  該類別文章的總數
+     */
+    public function getArticleTotleAttribute()
+    {
+        return $this->article->count();
+    }
+
 }

@@ -53,7 +53,7 @@ class Serie extends Model
     /**
      * 關聯 ArticleDetil Table
      */
-    public function Article()
+    public function article()
     {
         return $this->belongsToMany(Article::class,SerieHasArticle::class)->withPivot('page');
     }

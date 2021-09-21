@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Categorie;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Service\CategorieService;
 
 class CategorieController extends Controller
 {
@@ -39,11 +41,32 @@ class CategorieController extends Controller
      * @param  \App\Models\Categorie  $categorie
      * @return \Illuminate\Http\Response
      */
-    public function show(Categorie $categorie)
+    public function show(Request $request, Categorie $categorie, CategorieService $categorieService)
     {
-        return response()->json([
-            'result' => $categorie
-        ]);
+        $response = ['categoryData'      => $categorie];
+
+        if ($request->has('article')) {
+            ['pagination' => $articlePagination, 'where' => $articleWhere] = json_decode($request['article'], true);
+            $articlePaginate = $categorieService->articlePaginate($categorie, $articlePagination, $articleWhere);
+            $response += [
+                'article' => [
+                    'list'       => $articlePaginate->items(),
+                    'pagination' => [
+                        'page'  => $articlePaginate->currentPage(),
+                        'size'  => $articlePagination['size'],
+                        'total' => $articlePaginate->total(),
+                    ]
+                ]
+            ];
+            if ($request->has('serie')) {
+                ['pagination' => $seriePagination, 'where' => $serieWhere] = json_decode($request['serie'], true);
+                $seriePaginate = $categorieService->seriePaginate($categorie, $seriePagination, $serieWhere);
+                $response += [
+                    'serie' => $seriePaginate
+                ];
+            }
+        }
+        return response()->json($response);
     }
 
     /**

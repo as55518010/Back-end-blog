@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\UserDetail;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 

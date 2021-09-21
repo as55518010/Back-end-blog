@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Categorie;
 use App\Models\ArticleDetil;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,7 +44,23 @@ class Article extends Model
      */
     public function articleDetil()
     {
-        return $this->hasOne(ArticleDetil::class,'article_id','id');
+        return $this->hasOne(ArticleDetil::class, 'article_id', 'id');
+    }
+
+    /**
+     * 關聯 Categorie Table
+     */
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class, 'categorie_id', 'id');
+    }
+
+    /**
+     * 關聯 serieHasArticle Table
+     */
+    public function serieHasArticle()
+    {
+        return $this->hasMany(SerieHasArticle::class,'article_id','id');
     }
 
     /**
@@ -52,7 +69,7 @@ class Article extends Model
     public function getLastAttribute()
     {
         return $this->where([
-            ['id','<',$this->id]
+            ['id', '<', $this->id]
         ])->orderBy('id', 'desc')->first();
     }
     /**
@@ -61,7 +78,27 @@ class Article extends Model
     public function getNextAttribute()
     {
         return $this->where([
-            ['id','>',$this->id]
+            ['id', '>', $this->id]
+        ])->orderBy('id', 'asc')->first();
+    }
+    /**
+     *  該類別文章的上一筆
+     */
+    public function getCategorieLastAttribute()
+    {
+        return $this->where([
+            ['id', '<', $this->id],
+            ['categorie_id', '=', $this->categorie_id],
+        ])->orderBy('id', 'desc')->first();
+    }
+    /**
+     *  該類別文章的下一筆
+     */
+    public function getCategorieNextAttribute()
+    {
+        return $this->where([
+            ['id', '>', $this->id],
+            ['categorie_id', '=', $this->categorie_id],
         ])->orderBy('id', 'asc')->first();
     }
 }

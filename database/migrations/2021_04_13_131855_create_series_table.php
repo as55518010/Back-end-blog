@@ -17,7 +17,7 @@ class CreateSeriesTable extends Migration
             $table->id();
             $table->foreignId('categorie_id')->constrained('categories')->onDelete('cascade');
             $table->string('name', 60)->comment('系列名');
-            $table->string('description', 255)->nullable()->comment('系列描述');
+            $table->text('description')->nullable()->comment('系列描述');
             $table->timestamps();
         });
         DB::statement("ALTER TABLE `series` comment '文章系列表'");

@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SerieController;
@@ -36,6 +38,8 @@ Route::prefix('user')->group(function ($router) {
 });
 
 
+Route::get('article/{article}/serie/{serie}',        [ArticleController::class, 'showSeriesArticle']);
+Route::get('article/{article}/categorie/{categorie}', [ArticleController::class, 'showCategoryArticle']);
 Route::apiResource('article', ArticleController::class);
 
 Route::apiResource('categorie', CategorieController::class);
@@ -45,10 +49,10 @@ Route::apiResource('serie', SerieController::class);
 Route::prefix('admin')->group(function ($router) {
     $router->apiResource('menu', MenuController::class);
 
-    $router->get('/role/page',   [RoleController::class,'page']);
+    $router->get('/role/page',   [RoleController::class, 'page']);
     $router->apiResource('role', RoleController::class);
 
-    $router->get('/permission/page',   [PermissionController::class,'page']);
+    $router->get('/permission/page',   [PermissionController::class, 'page']);
     $router->apiResource('permission', PermissionController::class);
 
     $router->apiResource('file', FileController::class);

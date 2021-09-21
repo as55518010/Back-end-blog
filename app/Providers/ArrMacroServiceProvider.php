@@ -28,7 +28,7 @@ class ArrMacroServiceProvider extends ServiceProvider
          */
         Arr::macro('getTree', function ($items, $sonName = 'son', $sonTableName = 'pid') {
             $tree = array(); //格式化好的樹
-            foreach ($items as $item){
+            foreach ($items as $item) {
                 if (isset($items[$item[$sonTableName]]))
                     $items[$item[$sonTableName]][$sonName][] = &$items[$item['id']];
 
