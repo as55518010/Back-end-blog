@@ -7,6 +7,8 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SerieController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\BlogInfoController;
+use App\Http\Controllers\NewsFeedController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\Admin\MenuController;
 use App\Http\Controllers\Admin\RoleController;
@@ -38,13 +40,18 @@ Route::prefix('user')->group(function ($router) {
 });
 
 
-Route::get('article/{article}/serie/{serie}',        [ArticleController::class, 'showSeriesArticle']);
+Route::get('article/count',                           [ArticleController::class, 'articleCount']);
+Route::get('article/{article}/serie/{serie}',         [ArticleController::class, 'showSeriesArticle']);
 Route::get('article/{article}/categorie/{categorie}', [ArticleController::class, 'showCategoryArticle']);
 Route::apiResource('article', ArticleController::class);
 
 Route::apiResource('categorie', CategorieController::class);
 
 Route::apiResource('serie', SerieController::class);
+
+Route::apiResource('info', BlogInfoController::class);
+
+Route::apiResource('newsfeed', NewsFeedController::class);
 
 Route::prefix('admin')->group(function ($router) {
     $router->apiResource('menu', MenuController::class);

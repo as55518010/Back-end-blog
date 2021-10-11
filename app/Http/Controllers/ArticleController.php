@@ -6,6 +6,7 @@ use App\Models\Serie;
 use App\Models\Article;
 use App\Models\Categorie;
 use Illuminate\Support\Str;
+use App\Models\ArticleDetil;
 use Illuminate\Http\Request;
 use App\Service\ArticleService;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,7 @@ class ArticleController extends Controller
         $where      = json_decode($request['where'], true);
         $order      = json_decode($request['order'], true);
         $query      = Article::with(['articleDetil']);
+
         if ($where) {
             foreach ($where as $key => $value) {
                 $query->where(Str::snake($key), $value);
@@ -30,7 +32,13 @@ class ArticleController extends Controller
         }
         if ($order) {
             foreach ($order as $key => $value) {
-                $query->orderBy(Str::snake($key), $value);
+                if (Str::snake($key) === 'article_detils') {
+                    foreach ($value as $key1 => $value1) {
+                        $query->orderByWith('articleDetil', $key1, $value1);
+                    }
+                } else {
+                    $query->orderBy(Str::snake($key), $value);
+                }
             }
         }
         $res = $query->paginate($pagination['size'], ['*'], 'page', $pagination['page']);
@@ -41,6 +49,16 @@ class ArticleController extends Controller
                 'size'  => $pagination['size'],
                 'total' => $res->total(),
             ]
+        ]);
+    }
+    /**
+     * 文章總數
+     */
+    public function articleCount()
+    {
+        return response()->json([
+            'message' => '已成功獲取文章總數量',
+            'result'  => Article::count()
         ]);
     }
 
@@ -76,7 +94,7 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Article $article, ArticleService $articleService)
+    public function show(Article $article)
     {
         if (!isset($response['articleData'])) {
             $response['articleData']  = $article->append(['last', 'next'])->load(['articleDetil']);
@@ -89,7 +107,7 @@ class ArticleController extends Controller
     public function showSeriesArticle(Request $request, Article $article, Serie $serie, ArticleService $articleService)
     {
         if ($request->has('series')) {
-                      $series              = json_decode($request['series'], true);
+            $series              = json_decode($request['series'], true);
             $response['seriesArticleData'] = $articleService->seriesArticlePaginate($article, $serie, $series['pagination']);
             $response['articleData']       = $articleService->seriesArticleData($article, $serie);
             $response['series']            = $serie->load(['serieHasArticle']);
@@ -102,10 +120,10 @@ class ArticleController extends Controller
     public function showCategoryArticle(Request $request, Article $article, Categorie $categorie, ArticleService $articleService)
     {
         if ($request->has('category')) {
-                                $category            = json_decode($request['category'], true);
-                      $response['categoryArticleData'] = $articleService->categoryArticlePaginate($article, $categorie, $category['pagination']);
-                      $response['articleData']       = $article->append(['categorieLast', 'categorieNext'])->load(['articleDetil']);
-                      $response['categorie']         = $categorie->append(['articleTotle']);
+            $category            = json_decode($request['category'], true);
+            $response['categoryArticleData'] = $articleService->categoryArticlePaginate($article, $categorie, $category['pagination']);
+            $response['articleData']       = $article->append(['categorieLast', 'categorieNext'])->load(['articleDetil']);
+            $response['categorie']         = $categorie->append(['articleTotle']);
         }
         return response()->json($response);
     }
@@ -130,7 +148,8 @@ class ArticleController extends Controller
             $article->articleDetil()->update($request->only([
                 'tag',
                 'description',
-                'recommend'
+                'recommend',
+                'view'
             ]));
         });
         return response()->json([

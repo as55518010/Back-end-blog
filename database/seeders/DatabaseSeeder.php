@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Database\Seeders\NewsFeedSeeder;
 use Database\Seeders\AdminMenusSeeder;
 use Database\Seeders\PermissionSeeder;
 
@@ -19,6 +20,8 @@ class DatabaseSeeder extends Seeder
             AdminMenusSeeder::class,
             PermissionSeeder::class,
             CategoriesArticleSeeder::class,
+            BlogInfoSeeder::class,
+            NewsFeedSeeder::class,
         ]);
     }
 }

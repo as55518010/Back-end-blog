@@ -31,17 +31,20 @@ class PermissionSeeder extends Seeder
     public function users()
     {
         $createData = [
-            'user'=>[
+            'user' => [
                 'name'     => 'Derrick',
                 'email'    => 'as55518010@yahoo.com.tw',
                 'password' => bcrypt('as555180', ['rounds' => 12]),
             ],
-            'user_detail'=>[
-                'avatar_path'=>'/temporary/0Fu0o814Gfk07i4qXx4cBZfGidmjQRHK9L2u51kL.jpg',
-                'description'=>'我是一個小廢物'
+            'user_detail' => [
+                'avatar_path'    => 'https://www.lingmx.com/image/avatar.jpg',
+                'description'    => '我是一個小廢物',
+                'introduction'   => '你的一字一句猶如刀疤劃心上，我的一舉一動隨你改變多荒唐。',
+                'contact_github' => 'as55518010',
+                'contact_email'  => 'as55518010@gmail.com',
             ]
         ];
-        return tap(User::create($createData['user']),function($userModel) use($createData){
+        return tap(User::create($createData['user']), function ($userModel) use ($createData) {
             $userModel->detail()->create($createData['user_detail']);
         });
     }

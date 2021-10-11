@@ -26,9 +26,11 @@ class CreateUsersTable extends Migration
         Schema::create('user_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('avatar_path')->nullable();
-            $table->string('description')->nullable();
-            $table->text('introduction')->nullable();
+            $table->text('avatar_path')->nullable()->comment('頭像位置');
+            $table->string('description')->nullable()->comment('描述');
+            $table->text('introduction')->nullable()->comment('介紹');
+            $table->string('contact_github')->nullable()->comment('作者github');
+            $table->string('contact_email')->nullable()->comment('作者email');
             $table->timestamps();
         });
     }

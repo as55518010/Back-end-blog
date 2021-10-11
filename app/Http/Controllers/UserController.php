@@ -70,7 +70,7 @@ class UserController extends Controller
         ];
         return response()->json([
             'message' => '獲取用戶資訊成功',
-            'result'    => array_merge($expansion,Auth::user()->load('detail')->toArray())
+            'result'    => array_merge($expansion, Auth::user()->load('detail')->toArray())
         ]);
     }
 
@@ -120,22 +120,22 @@ class UserController extends Controller
      */
     public function profile(Request $request)
     {
-        $validatedData = $request->validate([
-            'name'        => ['required_without_all:avatar,password', 'string'],
-            'avatar.path' => ['required_without_all:name,password', 'string', 'nullable'],
-            'password'    => ['required_without_all:avatar,name', 'string', 'nullable'],
-        ]);
         try {
-            $updateData = array_filter([
-                'name'        => $validatedData['name'],
-                'avatar_path' => $validatedData['avatar']['path'],
-                'password'    => $validatedData['password'] ? bcrypt($validatedData['password']) : null,
-            ]);
-            if (Auth::user()->update($updateData)) {
-                return response()->json(['message' => '個人專區更新成功', 'result' => Auth::user()], 201);
+            if ($request->hasAny(['name', 'email', 'password'])) {
+                $updateData = array_filter([
+                    'name'     => $request['name'] ?? '',
+                    'email'    => $request['email'] ?? '',
+                    'password' => isset($request['password']) ? bcrypt($request['password']) : null,
+                ]);
+                Auth::user()->update($updateData);
             }
-        } catch (QueryException $e) {
-            return report($e);
+            if ($request->hasAny(['avatar_path', 'description', 'introduction', 'contact_github', 'contact_email'])) {
+                // dd(Auth::user()->detail()->update($request->only(['avatar_path', 'description', 'introduction', 'contact_github', 'contact_email'])));
+                Auth::user()->detail()->update($request->only(['avatar_path', 'description', 'introduction', 'contact_github', 'contact_email']));
+            }
+            return response()->json(['message' => '個人專區更新成功', 'result' => Auth::user()], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => '個人專區更新失敗'], 404);
         }
     }
 

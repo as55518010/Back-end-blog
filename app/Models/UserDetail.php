@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
@@ -44,7 +45,7 @@ class UserDetail extends Model
     {
         return [
             'path' => $this->avatar_path,
-            'url'  => Storage::disk('public')->url($this->avatar_path)
+            'url'  => Str::is('http*', $this->avatar_path)?$this->avatar_path:Storage::disk('public')->url($this->avatar_path)
         ];
     }
 }

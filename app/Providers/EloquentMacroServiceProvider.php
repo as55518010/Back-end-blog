@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Arr;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class EloquentMacroServiceProvider extends ServiceProvider
@@ -30,5 +31,24 @@ class EloquentMacroServiceProvider extends ServiceProvider
         Collection::macro('getTree', function ($sonName = 'son', $sonTableName = 'pid') {
             return Arr::getTree($this->keyBy('id')->toArray(), $sonName, $sonTableName);
         });
+        // 基于关联关系排序实现
+        Builder::macro(
+            'orderByWith',
+            function ($relation, $column, $direction = 'asc'): Builder {
+                /** @var Builder $this */
+                if (is_string($relation)) {
+                    $relation = $this->getRelationWithoutConstraints($relation);
+                }
+
+                return $this->orderBy(
+                    $relation->getRelationExistenceQuery(
+                        $relation->getRelated()->newQueryWithoutRelationships(),
+                        $this,
+                        $column
+                    ),
+                    $direction
+                );
+            }
+        );
     }
 }
